@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.konan.target.HostManager
 import java.net.URL
 
 plugins {
-    kotlin("multiplatform") version "1.7.21"
+    kotlin("multiplatform") version "1.9.22"
     id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
     id("org.jetbrains.dokka") version "1.7.20"
     id("maven-publish")
@@ -24,6 +24,17 @@ repositories {
 kotlin {
     targets {
         jvm()
+
+        wasmJs {
+            compilations.all {
+                kotlinOptions {
+                    sourceMap = true
+                    moduleKind = "umd"
+                    metaInfo = true
+                }
+            }
+            browser()
+        }
 
         js(BOTH) {
             compilations.all {
@@ -68,6 +79,18 @@ kotlin {
         commonTest {
             dependencies {
                 implementation(kotlin("test"))
+            }
+        }
+        
+        val wasmJsMain by getting {
+            dependencies {
+                implementation(kotlin("stdlib-wasm"))
+            }
+        }
+        
+        val wasmJsTest by getting {
+            dependencies {
+                implementation(kotlin("test-wasm"))
             }
         }
     }
